@@ -1,8 +1,10 @@
 using System;
 using Ataoge.SsoServer.Web.Data;
+using Ataoge.SsoServer.Web.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,6 +48,8 @@ namespace Ataoge.SsoServer.Web.Areas.Identity
                     options.AccessDeniedPath = "/Identity/Account/AccessDenied";
                     options.SlidingExpiration = true;
                 });
+
+                //services.AddSingleton<IEmailSender, EmailSender>();
             });
         }
     }

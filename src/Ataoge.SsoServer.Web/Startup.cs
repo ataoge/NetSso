@@ -49,10 +49,15 @@ namespace Ataoge.SsoServer.Web
         {
             
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(
-                    Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"))
+                //options.
+                );
+            services.AddIdentity<ApplicationUser, ApplicationRole>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddAtaogeEfStores<ApplicationDbContext>()
+                .AddUserManager<AspNetUserManager<ApplicationUser>>()
+                .AddDefaultUI();
+
+
             services.AddControllersWithViews();
            services.AddRazorPages();
         }

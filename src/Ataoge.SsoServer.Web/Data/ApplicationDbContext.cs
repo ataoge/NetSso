@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Ataoge.SsoServer.Web.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : EfIdentityDbContext<ApplicationUser, ApplicationRole, int>//, IConfigurationDbContext, IPersistedGrantDbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
