@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using Ataoge.AspNetCore.Identity.EntityFrameworkCore;
 using Ataoge.EntityFrameworkCore;
 using Ataoge.SsoServer.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;

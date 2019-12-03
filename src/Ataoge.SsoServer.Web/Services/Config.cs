@@ -216,13 +216,15 @@ namespace Ataoge.SsoServer.Web
                     ClientId = "server.code",
                     ClientName = "Server Client (Code)",
 
-                    RedirectUris = { "https://notused" },
-                    PostLogoutRedirectUris = { "https://notused" },
+                    RedirectUris = { "https://localhost:5003/signin-oidc" },
+                    PostLogoutRedirectUris = { "https://localhost:5003/signout-callback-oidc" },
+
 
                     ClientSecrets = { new Secret("secret".Sha256()) },
-                    RequireConsent = false,
+                    RequireConsent = true,
+                    //FrontChannelLogoutSessionRequired = true,
 
-                    AllowedGrantTypes = GrantTypes.CodeAndClientCredentials,
+                    AllowedGrantTypes = GrantTypes.HybridAndClientCredentials,
                     AllowedScopes = { "openid", "profile", "email", "api" },
 
                     AllowOfflineAccess = true,

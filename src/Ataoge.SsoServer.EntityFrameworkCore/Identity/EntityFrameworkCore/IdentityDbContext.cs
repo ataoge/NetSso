@@ -1,8 +1,9 @@
 using System;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore.Configurations;
 using Microsoft.EntityFrameworkCore;
 
-namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
+namespace Ataoge.AspNetCore.Identity.EntityFrameworkCore
 {
     /// <summary>
     /// Base class for the Entity Framework database context used for identity.

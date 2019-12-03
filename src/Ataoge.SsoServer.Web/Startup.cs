@@ -12,6 +12,7 @@ using Ataoge.SsoServer.Web.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Http;
 
 namespace Ataoge.SsoServer.Web
 {
@@ -48,18 +49,37 @@ namespace Ataoge.SsoServer.Web
         public void StartupConfigureServices(IServiceCollection services, bool useLocal = true)
         {
             
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"))
-                //options.
-                );
+            services.AddDbContext<ApplicationDbContext>(options => {
+                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+                options.UseIdentityServer(opts => {
+                    opts.UseInnerModel = true;
+                });
+            });
             services.AddIdentity<ApplicationUser, ApplicationRole>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddAtaogeEfStores<ApplicationDbContext>()
                 .AddUserManager<AspNetUserManager<ApplicationUser>>()
+                .AddDefaultTokenProviders()
                 .AddDefaultUI();
 
+            services.AddTransient<IUserClaimsPrincipalFactory<ApplicationUser>, AtaogeClaimsPrincipalFactory<ApplicationUser, ApplicationRole>>();
 
+            services.AddIdentityServer(options => {
+                    options.UserInteraction.ConsentUrl = new PathString("/Identity/Consent");
+                    options.UserInteraction.DeviceVerificationUrl = new PathString("/Identity/Device");
+                })
+                .AddDeveloperSigningCredential()
+                .AddAspNetIdentity<ApplicationUser>()
+                .AddInMemoryPersistedGrants()
+                //.AddOperationalStore<ApplicationDbContext>()
+                .AddConfigurationStore<ApplicationDbContext>()
+                //.AddInMemoryIdentityResources(Config.GetIdentityResources())
+                //.AddInMemoryApiResources(Config.GetApis())
+                //.AddInMemoryClients(Config.GetClients())
+                .AddProfileService<IdentityServer4.AspNetIdentity.ProfileService<ApplicationUser>>();
+
+            
             services.AddControllersWithViews();
-           services.AddRazorPages();
+            services.AddRazorPages();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -81,6 +101,7 @@ namespace Ataoge.SsoServer.Web
 
             app.UseRouting();
 
+            app.UseIdentityServer(); //IdentityServer4
             app.UseAuthentication();
             app.UseAuthorization();
 

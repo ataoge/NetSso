@@ -39,6 +39,7 @@ namespace IdentityServer4.EntityFramework.Storage
             services.AddSingleton(options);
             storeOptionsAction?.Invoke(options);
 
+            /*
             if (options.ResolveDbContextOptions != null)
             {
                 services.AddDbContext<TContext>(options.ResolveDbContextOptions);
@@ -49,7 +50,7 @@ namespace IdentityServer4.EntityFramework.Storage
                 {
                     options.ConfigureDbContext?.Invoke(dbCtxBuilder);
                 });
-            }
+            }*/
             services.AddScoped<IConfigurationDbContext, TContext>();
 
             return services;
@@ -82,6 +83,7 @@ namespace IdentityServer4.EntityFramework.Storage
             services.AddSingleton(storeOptions);
             storeOptionsAction?.Invoke(storeOptions);
 
+            /*
             if (storeOptions.ResolveDbContextOptions != null)
             {
                 services.AddDbContext<TContext>(storeOptions.ResolveDbContextOptions);
@@ -92,7 +94,8 @@ namespace IdentityServer4.EntityFramework.Storage
                 {
                     storeOptions.ConfigureDbContext?.Invoke(dbCtxBuilder);
                 });
-            }
+            }*/
+            
 
             services.AddScoped<IPersistedGrantDbContext, TContext>();
             services.AddTransient<TokenCleanupService>();

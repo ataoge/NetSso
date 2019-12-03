@@ -12,22 +12,39 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Ataoge.SsoServer.Web.Data;
+using IdentityServer4.Services;
+using IdentityServer4.Stores;
+using IdentityServer4.Models;
 
 namespace Ataoge.SsoServer.Web.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
     public class LoginModel : PageModel
     {
+        private readonly IIdentityServerInteractionService _interaction;
+        private readonly IClientStore _clientStore;
+        private readonly IAuthenticationSchemeProvider _schemeProvider;
+        private readonly IEventService _events;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
         private readonly IEmailSender _emailSender;
 
-        public LoginModel(SignInManager<ApplicationUser> signInManager, 
+        public LoginModel(
+            IIdentityServerInteractionService interaction,
+            IClientStore clientStore,
+            IAuthenticationSchemeProvider schemeProvider,
+            IEventService events,
+            SignInManager<ApplicationUser> signInManager, 
             ILogger<LoginModel> logger,
             UserManager<ApplicationUser> userManager,
             IEmailSender emailSender)
         {
+            _interaction = interaction;
+            _clientStore = clientStore;
+            _schemeProvider = schemeProvider;
+            _events = events;
+
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
@@ -35,7 +52,7 @@ namespace Ataoge.SsoServer.Web.Areas.Identity.Pages.Account
         }
 
         [BindProperty]
-        public InputModel Input { get; set; }
+        public LoginViewModel Input { get; set; }
 
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
@@ -44,28 +61,8 @@ namespace Ataoge.SsoServer.Web.Areas.Identity.Pages.Account
         [TempData]
         public string ErrorMessage { get; set; }
 
-        public class InputModel
-        {
-            [Required]
-            [EmailOrPhone]
-            public string Email { get; set; }
 
-            [Required]
-            [DataType(DataType.Password)]
-            public string Password { get; set; }
-
-            [Display(Name = "记住我?")]
-            public bool RememberMe { get; set; }
-
-            [Display(Name = "动态验证")]
-            public bool DynamicVerify {get; set;}
-
-            public string WelcomeDescription {get; set;}
-
-            public string ReturnUrl { get; set; }
-        }
-
-        public async Task OnGetAsync(string returnUrl = null)
+        public async Task<IActionResult> OnGetAsync(string returnUrl = null)
         {
             if (!string.IsNullOrEmpty(ErrorMessage))
             {
@@ -77,14 +74,51 @@ namespace Ataoge.SsoServer.Web.Areas.Identity.Pages.Account
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            //ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            //var schemes = await _schemeProvider.GetAllSchemesAsync();
+            //ExternalLogins = schemes.Where(s => !string.IsNullOrEmpty(s.DisplayName)).ToList();
 
             ReturnUrl = returnUrl;
+            
+            // IdentityServer4 build a model so we know what to show on the login page
+            Input = await BuildLoginViewModelAsync(returnUrl);
+
+            if (Input.IsExternalLoginOnly) 
+            {
+                var redirectUrl = Url.Page("./ExternalLogin", pageHandler: "Callback", values: new { Input.ReturnUrl });
+                var properties = _signInManager.ConfigureExternalAuthenticationProperties(Input.ExternalLoginScheme, redirectUrl);
+                return new ChallengeResult(Input.ExternalLoginScheme, properties);
+            }
+
+            return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(string returnUrl = null)
+        public async Task<IActionResult> OnPostAsync(string button, string returnUrl = null)
         {
             returnUrl = returnUrl ?? Url.Content("~/");
+
+            // check if we are in the context of an authorization request
+            var context = await _interaction.GetAuthorizationContextAsync(Input.ReturnUrl);
+            // the user clicked the "cancel" button
+            if (button != "login")
+            {
+                if (context != null) {
+                    // if the user cancels, send a result back into IdentityServer as if they 
+                    // denied the consent (even if this client does not require consent).
+                    // this will send back an access denied OIDC error response to the client.
+                    await _interaction.GrantConsentAsync(context, ConsentResponse.Denied);
+                    
+                    // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
+                    if (await _clientStore.IsPkceClientAsync(context.ClientId))
+                    {
+                        return RedirectToAction("Redirect");
+                    }
+                }
+                else {
+                    // since we don't have a valid context, then we just go back to the home page
+                    return Redirect("~/");
+                }
+            }
 
             if (ModelState.IsValid)
             {
@@ -94,6 +128,18 @@ namespace Ataoge.SsoServer.Web.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
+                    if (context != null)
+                    {
+                        if (await _clientStore.IsPkceClientAsync(context.ClientId))
+                        {
+                            // if the client is PKCE then we assume it's native, so this change in how to
+                            // return the response is for better UX for the end user.
+                            //return View("Redirect", new RedirectViewModel { RedirectUrl = model.ReturnUrl });
+                        }
+
+                        // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
+                        return Redirect(Input.ReturnUrl);
+                    }
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)
@@ -143,6 +189,77 @@ namespace Ataoge.SsoServer.Web.Areas.Identity.Pages.Account
 
             ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
             return Page();
+        }
+
+        /*****************************************/
+        /* helper APIs for the AccountController */
+        /*****************************************/
+        private async Task<LoginViewModel> BuildLoginViewModelAsync(string returnUrl)
+        {
+            var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
+            if (context?.IdP != null && await _schemeProvider.GetSchemeAsync(context.IdP) != null)
+            {
+                var local = context.IdP == IdentityServer4.IdentityServerConstants.LocalIdentityProvider;
+
+                // this is meant to short circuit the UI and only trigger the one external IdP
+                var vm = new LoginViewModel
+                {
+                    EnableLocalLogin = local,
+                    ReturnUrl = returnUrl,
+                    Email = context?.LoginHint,
+                };
+
+                if (!local)
+                {
+                    vm.ExternalProviders = new[] { new ExternalProvider { AuthenticationScheme = context.IdP } };
+                }
+
+                return vm;
+            }
+
+            var schemes = await _schemeProvider.GetAllSchemesAsync();
+
+            var providers = schemes
+                .Where(x => x.DisplayName != null ||
+                            (x.Name.Equals(AccountOptions.WindowsAuthenticationSchemeName, StringComparison.OrdinalIgnoreCase))
+                )
+                .Select(x => new ExternalProvider
+                {
+                    DisplayName = x.DisplayName,
+                    AuthenticationScheme = x.Name
+                }).ToList();
+
+            var allowLocal = true;
+            if (context?.ClientId != null)
+            {
+                var client = await _clientStore.FindEnabledClientByIdAsync(context.ClientId);
+                if (client != null)
+                {
+                    allowLocal = client.EnableLocalLogin;
+
+                    if (client.IdentityProviderRestrictions != null && client.IdentityProviderRestrictions.Any())
+                    {
+                        providers = providers.Where(provider => client.IdentityProviderRestrictions.Contains(provider.AuthenticationScheme)).ToList();
+                    }
+                }
+            }
+
+            return new LoginViewModel
+            {
+                AllowRememberLogin = AccountOptions.AllowRememberLogin,
+                EnableLocalLogin = allowLocal && AccountOptions.AllowLocalLogin,
+                ReturnUrl = returnUrl,
+                Email = context?.LoginHint,
+                ExternalProviders = providers.ToArray()
+            };
+        }
+
+        private async Task<LoginViewModel> BuildLoginViewModelAsync(LoginInputModel model)
+        {
+            var vm = await BuildLoginViewModelAsync(model.ReturnUrl);
+            vm.Email = model.Email;
+            vm.RememberMe = model.RememberMe;
+            return vm;
         }
     }
 }

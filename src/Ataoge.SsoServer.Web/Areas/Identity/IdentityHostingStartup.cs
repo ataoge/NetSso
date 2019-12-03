@@ -40,6 +40,8 @@ namespace Ataoge.SsoServer.Web.Areas.Identity
 
                 services.ConfigureApplicationCookie(options =>
                 {
+                    options.Cookie.Name = ".AspNetCore.Identity.ChinaDci";
+                    
                     // Cookie settings
                     options.Cookie.HttpOnly = true;
                     options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
@@ -47,7 +49,19 @@ namespace Ataoge.SsoServer.Web.Areas.Identity
                     options.LoginPath = "/Identity/Account/Login";
                     options.AccessDeniedPath = "/Identity/Account/AccessDenied";
                     options.SlidingExpiration = true;
+
+                    
                 });
+
+                services.AddAuthentication()
+                    .AddMicrosoftAccount(options =>
+                    {
+                        //options.AuthorizationEndpoint = "http://localhost:5000/signin-oauth";
+                        //options.TokenEndpoint = "http://localhost:5000/signin-oauth";
+                        options.CallbackPath = "/signin-oauth";
+                        options.ClientId = "79231c6a-178d-4292-8d13-67ee94c17128";//Configuration["auth:facebook:appid"];
+                        options.ClientSecret = "217QEGdgex4KXMkmmCCCdYL";//Configuration["auth:facebook:appsecret"];
+                    });
 
                 //services.AddSingleton<IEmailSender, EmailSender>();
             });
