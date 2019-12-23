@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,72 +8,73 @@
     <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
     <link rel="stylesheet" href="/css/site.css" />
+    <link rel="stylesheet" href="/css/login.css" />
     <style type="text/css">
         .center-vertical {
-position:relative;
-top:50%;
-transform:translateY(-50%);
-}
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+        }
 
-#triangle-topright {
-    width: 0;
-    height: 0;
-    border-top: 100px solid #fff;
-    border-left: 100px solid transparent;
- 
-}
+        #triangle-topright {
+            width: 0;
+            height: 0;
+            border-top: 100px solid #fff;
+            border-left: 100px solid transparent;
 
-.triangle-bottomleft {
-    position:absolute;
-    right:10px;
-    top:0;
-    width: 0;
-    height: 0;
-    border-bottom: 66px solid #fff;
-    border-right: 66px solid transparent;
-    pointer-events: none;
-}
+        }
 
+        body {
+            background: #0068B5;
+            background: linear-gradient(to top, #0068B5 0%, #7CAFE1 100%);/*用线性渐变创建图像*/
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0068B5', endColorstr='#7CAFE1', GradientType=0);
+        }
 
+        #login {
+            margin: 20px 0px 0px 0px;
+            padding: 20px 4px 0px 4px;
+            position: relative;
+        }
 
+        #demo {
+            width: 480px;
+        }
 
+        .input-group>Label {
+            display: none;
+        }
 
-#login  .nav-link.active
-{
-color: red;
-display: none;
-}
-
-#login  .nav-link:after
-{
-    display: bottom;
-    position: absolute;
-    left:10px;
-    content:attr(data-title);
-}
-
-   
+        .form-control-feedback {
+            position: absolute;
+            top: .5rem;
+            right: 1.5rem;
+            z-index: 3;
+            display: block;
+            text-align: center;
+            pointer-events: none;
+        }
     </style>
 </head>
+
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" href="/">Ataoge.SsoServer.Web</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand" href="/">城信统一认证中心</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                    
-<ul class="navbar-nav">
-    <li class="nav-item">
-        <a class="nav-link text-dark" href="/Identity/Account/Register">Register</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link text-dark" href="/Identity/Account/Login">Login</a>
-    </li>
-</ul>
+
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="/Identity/Account/Register">Register</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="/Identity/Account/Login">Login</a>
+                        </li>
+                    </ul>
 
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
@@ -80,150 +82,213 @@ display: none;
                         </li>
                         <li class="nav-item"></li>
                         <span class="navbar-text">
-                                XX系统
-                              </span>
-                            </li>
+                            XX系统
+                        </span>
+                        </li>
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
+    <div class="container" >
         <main role="main" class="pb-3">
-            
+            <div class="row">
+                <div class="d-none d-lg-block d-xl-block col-lg-8">
+                    <div id="demo" class="carousel slide center-vertical mx-auto" data-ride="carousel">
 
-
-<div class="row">
-        <div class="d-none d-md-block col-md-8"  >
-                <div id="demo" class="carousel slide center-vertical" data-ride="carousel">
- 
                         <!-- 指示符 -->
                         <ul class="carousel-indicators">
-                          <li data-target="#demo" data-slide-to="0" class="active"></li>
-                          <li data-target="#demo" data-slide-to="1"></li>
-                          <li data-target="#demo" data-slide-to="2"></li>
-                        </ul>
-                       
+                            <li data-target="#demo" data-slide-to="0" class="active"></li>
+                            <li data-target="#demo" data-slide-to="1"></li>
+                         </ul>
+
                         <!-- 轮播图片 -->
-                        <div class="carousel-inner" >
-                          <div class="carousel-item active">
-                            <img class="img-fluid" src="https://static.runoob.com/images/mix/img_fjords_wide.jpg">
-                            <div class="carousel-caption">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <img class="" src="https://login.chinadci.com/images/img_1.png">
+                                <div class="carousel-caption">
                                     <h3>第一张图片描述标题</h3>
                                     <p>描述文字!</p>
-                                  </div>
-                          </div>
-                          <div class="carousel-item">
-                            <img class="img-fluid" src="https://static.runoob.com/images/mix/img_nature_wide.jpg">
-                          </div>
-                          <div class="carousel-item">
-                            <img class="img-fluid" src="https://static.runoob.com/images/mix/img_mountains_wide.jpg">
-                          </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <img class="img-fluid" src="https://login.chinadci.com/images/img_2.png">
+                            </div>
+                            
                         </div>
-                       
+
                         <!-- 左右切换按钮 -->
                         <a class="carousel-control-prev" href="#demo" data-slide="prev">
-                          <span class="carousel-control-prev-icon"></span>
+                            <span class="carousel-control-prev-icon"></span>
                         </a>
                         <a class="carousel-control-next" href="#demo" data-slide="next">
-                          <span class="carousel-control-next-icon"></span>
+                            <span class="carousel-control-next-icon"></span>
                         </a>
-                       
-                      </div>
-        </div>
-        <div id="login" class="col-xd-12 col-md-4 p-1 border border-light  ">
-                <ul class="nav nav-tabs justify-content-end ">
-                        <li class="nav-item" >
-                               
-                                <a class="nav-link active" data-title="二维码" data-toggle="tab" href="#userpassword"><i class="fa fa-home"  style="font-size:48px;"></i></a>
-                              </li>
-                              <li class="nav-item" >
-                                    <a class="nav-link" data-title="用户名" data-toggle="tab"  href="#qrcode"><i data-toggle="tooltip" data-placement="left" title="aaa"  class=" fa fa-car"  style="font-size:48px;"></i></a>
-                                  </li>
-                </ul> 
-                <div class="triangle-bottomleft"></div>   
-                <div class="tab-content">
-                    <div id="userpassword" class="tab-pane container active">
-            <section>
-                <form id="account" method="post">
-                    <h4>Use a local account to log in.</h4>
-                    <hr />
-                    <div class="text-danger validation-summary-valid" data-valmsg-summary="true"><ul><li style="display:none"></li>
-</ul></div>
-                    <div class="form-group">
-                        <label for="Input_Email">Email</label>
-                        <input class="form-control" type="text" data-val="true" data-val-required="The Email field is required." id="Input_Email" name="Input.Email" value="" />
-                        <span class="text-danger field-validation-valid" data-valmsg-for="Input.Email" data-valmsg-replace="true"></span>
+
                     </div>
-                    <div class="form-group">
-                        <label for="Input_Password">Password</label>
-                        <input class="form-control" type="password" data-val="true" data-val-required="The Password field is required." id="Input_Password" name="Input.Password" />
-                        <span class="text-danger field-validation-valid" data-valmsg-for="Input.Password" data-valmsg-replace="true"></span>
-                    </div>
-                    <div class="form-group">
-                        <div class="checkbox">
-                            <label for="Input_RememberMe">
-                                <input type="checkbox" data-val="true" data-val-required="The &#x8BB0;&#x4F4F;&#x6211;? field is required." id="Input_RememberMe" name="Input.RememberMe" value="true" />
-                                &#x8BB0;&#x4F4F;&#x6211;?
-                            </label>
+                </div>
+                <div class="col-xd-12 offset-md-2 col-md-8 offset-lg-0 col-lg-4">
+                    <div id="login" class="border border-light rounded bg-white">
+                        <h4 class="text-center">本地账号登录</h4>
+                        <ul class="nav login-tabs justify-content-end ">
+                            <li class="login-item">
+
+                                <a class="login-link active" data-title="二维码" data-toggle="tab" href="#userpassword"><i
+                                    data-toggle="tooltip" data-placement="left" title="bbb" class="fa fa-home" ></i></a>
+                            </li>
+                            <li class="login-item ">
+                                <a class="login-link " data-title="用户名密码登录" data-toggle="tab" href="#qrcode"><i
+                                        data-toggle="tooltip" data-placement="left" title="aaa" class=" fa fa-car"
+                                        ></i></a>
+                            </li>
+                        </ul>
+                        <div class="triangle-bottomleft"></div>
+                        <div class="tab-content" style="min-height: 250px;">
+                            <div id="userpassword" class="tab-pane container active">
+                                <section>
+                                    <form id="account" method="post">
+                                            <div class="text-danger validation-summary-valid" data-valmsg-summary="true">
+                                                    <ul>
+                                                        <li style="display:none"></li>
+                                                    </ul>
+                                                </div>
+                                                <div class="form-group input-group">
+        
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">@</span>
+        
+                                                    </div>
+                                                    <input class="form-control" type="text" data-val="true"
+                                                        data-val-required="The Email field is required." id="Input_Email"
+                                                        name="Input.Email" value="" />
+                                                    <span class="form-control-feedback"><i class="fa fa-home"></i></span>
+        
+                                                </div>
+
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <label class="input-group-text" for="Input_Password"><i
+                                                            class="fa fa-car"></i></label>
+                                                </div>
+
+                                                <input class="form-control" type="password" data-val="true"
+                                                    data-val-required="The Password field is required."
+                                                    id="Input_Password" name="Input.Password" />
+                                                <span class="text-danger field-validation-valid"
+                                                    data-valmsg-for="Input.Password" data-valmsg-replace="true"></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <div class="checkbox form-check-inline">
+                                                <label for="Input_RememberMe">
+                                                    <input type="checkbox" data-val="true"
+                                                        data-val-required="The &#x8BB0;&#x4F4F;&#x6211;? field is required."
+                                                        id="Input_RememberMe" name="Input.RememberMe" value="true" />
+                                                    &#x8BB0;&#x4F4F;&#x6211;?
+                                                </label>
+                                            </div>
+                                            <div class="checkbox form-check-inline float-right">
+                                                <label for="Input_RememberMe">
+                                                    <input type="checkbox" data-val="true"
+                                                        data-val-required="The &#x8BB0;&#x4F4F;&#x6211;? field is required."
+                                                        id="Input_RememberMe" name="Input.RememberMe" value="true" />
+                                                    &#x8BB0;&#x4F4F;&#x6211;?
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="submit" class="btn btn-primary btn-block" name="button"
+                                                value="login">Log in</button>
+                                        </div>
+                                        <div class="form-group">
+                                            <span>
+                                                <a id="forgot-password"
+                                                    href="/Identity/Account/ForgotPassword">忘记密码?</a>
+                                            </span>
+
+                                            <p class="float-right">
+                                                <button type="submit" class="btn-link"
+                                                    style="padding:0px;margin:0px;border:0px"
+                                                    formaction="/Identity/Account/Login?handler=SendVerificationEmail">重发邮箱验证信息</button>
+                                            </p>
+                                        </div>
+                                        <input name="__RequestVerificationToken" type="hidden"
+                                            value="CfDJ8ILaUW3YgKxDpytufuNGExoPPLX4puxLzSp2PrL1Rw1eJeoUOIdikmKInQLdO0QLhh-oVq-JeOkTTIm3IA46zr1UG1fcoXIWNrwIVGBQNCsXDAqWguULPw8Kd-aYWY-KrZJ7HVWGHBNWexD1s0q1kd8" /><input
+                                            name="Input.RememberMe" type="hidden" value="false" />
+                                    </form>
+                                </section>
+                            </div>
+                            <div id="qrcode" class="tab-pane container">
+                                <section>
+                                    <form method="post">
+                                            <div class="text-danger validation-summary-valid" data-valmsg-summary="true">
+                                                    <ul>
+                                                        <li style="display:none"></li>
+                                                    </ul>
+                                                </div>
+                                        <div class="form-group input-group"><input class="form-control" /></div>
+                                    </form>
+                                </section>
+                            </div>
+
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary" name="button" value="login">Log in</button>
-                    </div>
-                    <div class="form-group">
+                        <div class="text-center">
+                        <section>
+                            <div class="d-flex justify-content-center text-center">
+                                <div class="d-inline-block align-self-center w-10 h-25 bg-warning"></div>
+                                <span class="align-self-center">-- OR --</span>
+                                <div class="d-inline-block align-self-center w-10"></div>
+                            </div>
+
+                            <form id="external-account" method="post" class="form-horizontal"
+                                action="/Identity/Account/ExternalLogin?returnUrl=%2F">
+                                <div>
+                                    <p>
+                                        <button type="submit" class="btn btn-primary" name="provider" value="Microsoft"
+                                            title="Log in using your Microsoft account">Microsoft</button>
+                                    </p>
+                                </div>
+                                <input name="__RequestVerificationToken" type="hidden"
+                                    value="CfDJ8ILaUW3YgKxDpytufuNGExoPPLX4puxLzSp2PrL1Rw1eJeoUOIdikmKInQLdO0QLhh-oVq-JeOkTTIm3IA46zr1UG1fcoXIWNrwIVGBQNCsXDAqWguULPw8Kd-aYWY-KrZJ7HVWGHBNWexD1s0q1kd8" />
+                            </form>
+                        </section>
                         <p>
-                            <a id="forgot-password" href="/Identity/Account/ForgotPassword">Forgot your password?</a>
-                        </p>
-                        <p>
-                            <a href="/Identity/Account/Register?returnUrl=%2F">Register as a new user</a>
-                        </p>
-                        <p>
-                            <button type="submit" class="btn-link" style="padding:0px;margin:0px;border:0px" formaction="/Identity/Account/Login?handler=SendVerificationEmail">Resend email confirmation</button>
+                            还没有账号？ <a href="/Identity/Account/Register?returnUrl=%2F">注册新用户</a>
                         </p>
                     </div>
-                <input name="__RequestVerificationToken" type="hidden" value="CfDJ8ILaUW3YgKxDpytufuNGExoPPLX4puxLzSp2PrL1Rw1eJeoUOIdikmKInQLdO0QLhh-oVq-JeOkTTIm3IA46zr1UG1fcoXIWNrwIVGBQNCsXDAqWguULPw8Kd-aYWY-KrZJ7HVWGHBNWexD1s0q1kd8" /><input name="Input.RememberMe" type="hidden" value="false" /></form>
-            </section>
-          <section>
-            <h4>Use another service to log in.</h4>
-            <hr />
-                    <form id="external-account" method="post" class="form-horizontal" action="/Identity/Account/ExternalLogin?returnUrl=%2F">
-                        <div>
-                            <p>
-                                    <button type="submit" class="btn btn-primary" name="provider" value="Microsoft" title="Log in using your Microsoft account">Microsoft</button>
-                            </p>
-                        </div>
-                    <input name="__RequestVerificationToken" type="hidden" value="CfDJ8ILaUW3YgKxDpytufuNGExoPPLX4puxLzSp2PrL1Rw1eJeoUOIdikmKInQLdO0QLhh-oVq-JeOkTTIm3IA46zr1UG1fcoXIWNrwIVGBQNCsXDAqWguULPw8Kd-aYWY-KrZJ7HVWGHBNWexD1s0q1kd8" /></form>
-        </section>
-         </div>
-         <div id="qrcode" class="tab-pane container">eeee</div>
-        </div>
-    </div>
-</div>
+                    </div>
+                </div>
+            </div>
 
 
-        </main>
+    
+
+
+    </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="border-top footer text-muted bg-white">
         <div class="container">
-            &copy; 2019 - Ataoge.SsoServer.Web - <a href="/Home/Privacy">Privacy</a>
+            &copy; 2019 - 广州城市信息研究所有限公司 - <a href="/Home/Privacy">Privacy</a>
         </div>
     </footer>
     <script src="/lib/jquery/dist/jquery.min.js"></script>
     <script src="/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/site.js?v=4q1jwFhaPaZgr8WAUSrux6hAuh0XDg9kPS3xIVq36I0"></script>
-    
-    
+
+
     <script src="/Identity/lib/jquery-validation/dist/jquery.validate.js"></script>
     <script src="/Identity/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
 
 
     <script>
-            $(document).ready(function(){
-                $('[data-toggle="tooltip"]').tooltip();   
-            });
-            </script>
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
 
 </body>
+
 </html>

@@ -1,0 +1,249 @@
+a.navbar-brand {
+    white-space: normal;
+    text-align: center;
+    word-break: break-all;
+}
+
+/* Provide sufficient contrast against white background */
+a {
+    color: #0366d6;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+    font-size: 14px;
+}
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.border-top {
+    border-top: 1px solid #e5e5e5;
+}
+.border-bottom {
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow {
+    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy {
+    font-size: 1rem;
+    line-height: inherit;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+
+    /* Margin bottom by footer height #0068B5 #7CAFE1 */
+    margin-bottom: 60px;
+    background: #1A16B5;
+    background: linear-gradient(to top, #1A16B5 0%, #677FE5 100%);/*用线性渐变创建图像*/
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0068B5', endColorstr='#7CAFE1', GradientType=0);
+    background-image: url('../images/bg_login.png');
+    background-repeat:no-repeat;
+    background-size:100% 100%;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 60px; /* Vertically center the text there */
+}
+
+.triangle-bottomleft {
+    position:absolute;
+    right:0px;
+    top: 50px;
+    width: 0;
+    height: 0;
+    border-bottom: 49px solid #fff;
+    border-right: 49px solid transparent;
+    pointer-events: none;
+}
+
+.login-tabs {
+    border-bottom: 0px solid #dee2e6;
+
+}
+
+.login-tabs .login-item {
+    margin-bottom: -1px;
+
+}
+
+.login-tabs .login-link {
+    border: 1px solid transparent;
+
+    border-top-left-radius : 0.25rem;
+    border-top-right-radius : 0.25rem;
+
+    line-height: 2rem;
+
+    text-decoration: none;
+
+}
+
+.login-tabs .login-link.active {
+    display: none;
+
+}
+
+.login-link:before
+{
+    position: absolute;
+    left:20px;
+    color:black;
+    content:attr(data-title);
+    pointer-events:none;
+}
+
+.login-link i {
+    font-size: 2rem;
+}
+
+
+.center-vertical {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#login {
+    margin: 50px 0px 50px 0px;
+    padding: 20px 4px 0px 4px;
+    position: relative;
+    box-shadow: 2px 2px 5px #333333;
+}
+
+#demo {
+    width: 594px;
+}
+
+#demo .carousel-caption {
+    top:0px;
+}
+
+.form-control-feedback
+{
+    position: absolute;
+    right: 0;
+    z-index: 3;
+    display: block;
+    width : 1rem;
+    height: 1rem;
+    line-height: 1.5;
+    text-align: center;
+}
+
+
+a.skew-title {
+    font-size: 1.5rem;
+    text-decoration: none;
+}
+.skew-title strong {
+    color:#1A16B5
+}
+.skew-title span {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 50px;
+    margin: auto;
+    z-index: 2;
+    text-align: center;
+    color: #fff;
+    font-family: 'roboto condensed';
+    font-weight: 700;
+    font-size: 35.714285714285715px;
+    line-height: 50px;
+    -webkit-transform: skewY(-15deg);
+    transform: skewY(-15deg);
+    -webkit-transform-origin: 0 100%;
+    transform-origin: 0 100%;
+    transition: all 0.2s;
+    cursor: default;
+}
+.skew-title span:after,
+.skew-title span:before {
+    display: block;
+    top: 0;
+    left: 0;
+    width: 40px;
+    height: 50px;
+    position: absolute;
+    background: #185a81;
+    content: ' ';
+    z-index: -1;
+    transition: all 0.2s;
+}
+.skew-title span:before {
+    background: rgba(0,0,0,0.1);
+    -webkit-transform: skewY(15deg);
+    transform: skewY(15deg);
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+}
+.skew-title span:nth-child(even) {
+    background-color: #144c6e;
+    -webkit-transform: skewY(15deg);
+    transform: skewY(15deg);
+    -webkit-transform-origin: 100% 100%;
+    transform-origin: 100% 100%;
+    color: #d9d9d9;
+}
+.skew-title span:nth-child(even):after {
+    background-color: #144c6e;
+}
+.skew-title span:nth-child(even):before {
+    -webkit-transform-origin: 100% 0;
+    transform-origin: 100% 0;
+    -webkit-transform: skewY(-15deg);
+    transform: skewY(-15deg);
+}
+.skew-title span.flat {
+    -webkit-transform: skewY(0);
+    transform: skewY(0);
+    color: #fff;
+}
+.skew-title span.flat:before {
+    -webkit-transform: skewY(0);
+    transform: skewY(0);
+}
+.skew-title span.flat:nth-child(even):after {
+    background-color: #185a81;
+}
+.skew-title span.alt:after {
+    background-color: #b94a2c;
+}
+.skew-title span.alt:nth-child(even):after {
+    background-color: #9d3f25;
+}
+.skew-title span.alt.flat:nth-child(even):after {
+    background-color: #b94a2c;
+}

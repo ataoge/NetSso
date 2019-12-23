@@ -2,87 +2,210 @@
 @model LoginModel
 
 @{
+    Layout = "_LoginLayout";
     ViewData["Title"] = "登录";
 }
 
-<h1>@ViewData["Title"]</h1>
 <div class="row">
-    @if (Model.Input.EnableLocalLogin)
-    {
-        <div class="col-md-4">
-            <section>
-                <form id="account" method="post">
-                    <h4>Use a local account to log in.</h4>
-                    <hr />
-                    <div asp-validation-summary="All" class="text-danger"></div>
-                    <div class="form-group">
-                        <label asp-for="Input.Email"></label>
-                        <input asp-for="Input.Email" class="form-control" />
-                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+    <div class="d-none d-lg-block d-xl-block col-lg-8">
+        <div id="demo" class="carousel slide center-vertical mx-auto" data-ride="carousel">
+
+            <!-- 指示符 -->
+            <ul class="carousel-indicators">
+                <li data-target="#demo" data-slide-to="0" class="active"></li>
+                <li data-target="#demo" data-slide-to="1"></li>
+            </ul>
+
+            <!-- 轮播图片 -->
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="~/images/local_login.png" />
+                    <div class="carousel-caption">
+                        <h3>城信统一认证中心</h3>
                     </div>
-                    <div class="form-group">
-                        <label asp-for="Input.Password"></label>
-                        <input asp-for="Input.Password" class="form-control" />
-                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+                <div class="carousel-item">
+                    <img src="~/images/onemap_login.png" />
+                    <div class="carousel-caption">
+                        <h3>一张图实施监督系统</h3>
                     </div>
-                    <div class="form-group">
-                        <div class="checkbox">
-                            <label asp-for="Input.RememberMe">
-                                <input asp-for="Input.RememberMe" />
-                                @Html.DisplayNameFor(m => m.Input.RememberMe)
-                            </label>
+                </div>
+
+            </div>
+
+            <!-- 左右切换按钮
+            <a class="carousel-control-prev" href="#demo" data-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </a>
+            <a class="carousel-control-next" href="#demo" data-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </a>-->
+
+        </div>
+    </div>
+    <div class="col-xd-12 offset-md-2 col-md-8 offset-lg-0 col-lg-4">
+        <div id="login" class="border border-light rounded bg-white">
+            <h4 class="text-center">本地账号登录</h4>
+            <ul class="nav login-tabs justify-content-end ">
+                <li class="login-item">
+
+                    <a class="login-link active" data-title="二维码" data-toggle="tab" href="#userpassword">
+                        <i data-toggle="tooltip" data-placement="left" title="密码登录" class="fa icon-pc" ></i>
+                    </a>
+                </li>
+                <li class="login-item ">
+                    <a class="login-link " data-title="用户名密码登录" data-toggle="tab" href="#qrcode">
+                        <i data-toggle="tooltip" data-placement="left" title="扫码登录" class="fa icon-qrcode"></i>
+                    </a>
+                </li>
+            </ul>
+            <div class="triangle-bottomleft"></div>
+            <div class="tab-content" style="min-height: 250px">
+                <div id="userpassword" class="tab-pane container active">
+                    <section>
+                    @if (Model.Input.EnableLocalLogin)
+                    {
+                        <form id="account" method="post">                                   
+                            <div asp-validation-summary="All" class="text-danger"></div>
+           
+                            <div class="form-group input-group">
+
+                                <div class="input-group-prepend">
+                                    <label class="input-group-text" asp-for="Input.Email"><i class="icon-user"></i></label>
+
+                                </div>
+                                <input asp-for="Input.Email" class="form-control" />
+                                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group input-group">
+
+                                    <div class="input-group-prepend">
+                                        <label class="input-group-text" aspfor="password"><i
+                                                class="icon-pwd"></i></label>
+                                    </div>
+
+                                    <input asp-for="Input.Password" class="form-control" />
+                                    <div class="input-group-append">
+                                        <span id="passwordeye" class="input-group-text bg-transparent icon-eyeclos"></span>
+                                    </div>
+                                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="checkbox  form-check-inline">
+                                    <label asp-for="Input.RememberMe">
+                                        <input asp-for="Input.RememberMe" />
+                                        @Html.DisplayNameFor(m => m.Input.RememberMe)
+                                    </label>
+                                </div>
+                                <div class="checkbox form-check-inline float-right">
+                                    <label for="Input_SmsLogin">
+                                        <input type="checkbox" data-val="true"
+                                                data-val-required="The &#x8BB0;&#x4F4F;&#x6211;? field is required."
+                                                id="Input_SmsLogin" name="Input.SmsLogin" value="true" />
+                                        动态密码
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary btn-block" name="button"
+                                        value="login">登录</button>
+                            </div>
+
+                        </form>
+ 
+                        <div class="form-group">
+                                    <span>
+                                        <a id="forgot-password" asp-page="./ForgotPassword">忘记密码?</a>
+                                    </span>
+
+                            <span class="float-right">
+                                <button type="submit" class="btn-link border-0 bg-transparent"
+                                        fasp-page-handler="SendVerificationEmail" >重发邮箱验证信息</button>
+                            </span>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary" name="button" value="login">Log in</button>
-                    </div>
-                    <div class="form-group">
-                        <p>
-                            <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
-                        </p>
-                        <p>
-                            <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
-                        </p>
-                        <p>
-                            <button type="submit" asp-page-handler="SendVerificationEmail" class="btn-link" style="padding:0px;margin:0px;border:0px">Resend email confirmation</button>
-                        </p>
-                    </div>
-                </form>
+                    }
+                    </section>
+                </div>
+                <div id="qrcode" class="tab-pane container">
+                    <section>
+                        <form method="post">
+                            <div class="text-danger validation-summary-valid" data-valmsg-summary="true">
+                                <ul>
+                                    <li style="display:none"></li>
+                                </ul>
+                            </div>
+                            <div class="form-group input-group"><input class="form-control" /></div>
+                        </form>
+                    </section>
+                </div>
+            </div>
+            <section class="text-center">
+
+                <div class="d-flex justify-content-center text-center">
+                    <div class="d-inline-block align-self-center w-10 h-25 bg-warning"></div>
+                    <span class="align-self-center">---- 或者 ----</span>
+                    <div class="d-inline-block align-self-center w-10"></div>
+                </div>
+                <div>
+                                       
+                @{
+                    if (!Model.Input.VisibleExternalProviders.Any())
+                    {
+                        
+                            <p>
+                                There are no external authentication services configured. See <a href="https://go.microsoft.com/fwlink/?LinkID=532715">this article</a>
+                                for details on setting up this ASP.NET application to support logging in via external services.
+                            </p>
+                    
+                    }
+                    else
+                    {
+                        <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                        
+                                <p>
+                                    @foreach (var provider in Model.Input.VisibleExternalProviders)
+                                    {
+                                        <button type="submit" class="btn btn-primary" name="provider" value="@provider.AuthenticationScheme" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+                                    }
+                                </p>
+                        
+                        </form>
+                    }
+                }
+
+                </div>
+
+
+                <div>
+                    <p>还没有账号？<a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">注册新用户</a></p>
+                </div>
             </section>
         </div>
-    }
-    <div class="col-md-6 col-md-offset-2">
-        <section>
-            <h4>Use another service to log in.</h4>
-            <hr />
-            @{
-                if (!Model.Input.VisibleExternalProviders.Any())
-                {
-                    <div>
-                        <p>
-                            There are no external authentication services configured. See <a href="https://go.microsoft.com/fwlink/?LinkID=532715">this article</a>
-                            for details on setting up this ASP.NET application to support logging in via external services.
-                        </p>
-                    </div>
-                }
-                else
-                {
-                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
-                        <div>
-                            <p>
-                                @foreach (var provider in Model.Input.VisibleExternalProviders)
-                                {
-                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.AuthenticationScheme" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
-                                }
-                            </p>
-                        </div>
-                    </form>
-                }
-            }
-        </section>
     </div>
 </div>
+       
+
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script type="text/javascript">
+         $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+
+
+            //显示/隐藏密码
+            $('#passwordeye').off('click').on('click',function(){
+                if ($(this).hasClass('icon-eyeclos')){
+                    $(this).removeClass('icon-eyeclos').addClass('icon-eyeopen');//密码可见
+                    $('#Input_Password').prop('type','text');
+                }else{
+                    $(this).removeClass('icon-eyeopen').addClass('icon-eyeclos');//密码不可见
+                    $('#Input_Password').prop('type','password');
+                };
+            });
+
+        });
+    </script>
 }
