@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Ataoge.SsoServer.Web.Data;
+using Ataoge.SsoServer.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -25,14 +26,19 @@ namespace Ataoge.SsoServer.Web.Areas.Identity.Pages.Account
         private readonly IEmailSender _emailSender;
         private readonly ILogger<ExternalLoginModel> _logger;
 
+        private readonly IOnlineUserService _onlineUserService;
+
+
         public ExternalLoginModel(
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
+            IOnlineUserService onlineUserService,
             ILogger<ExternalLoginModel> logger,
             IEmailSender emailSender)
         {
             _signInManager = signInManager;
             _userManager = userManager;
+            _onlineUserService = onlineUserService;
             _logger = logger;
             _emailSender = emailSender;
         }
@@ -86,6 +92,14 @@ namespace Ataoge.SsoServer.Web.Areas.Identity.Pages.Account
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor : true);
             if (result.Succeeded)
             {
+                //添加在线用户
+                string client = this.Request.Headers["User-Agent"];
+                var userName = info.Principal.FindFirstValue("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress");
+                if (!string.IsNullOrEmpty(userName))
+                {
+                    _onlineUserService.Add(userName.ToLower(), client);
+                }
+                               
                 _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
                 return LocalRedirect(returnUrl);
             }

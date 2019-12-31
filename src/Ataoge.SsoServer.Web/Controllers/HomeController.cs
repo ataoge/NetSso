@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Ataoge.SsoServer.Web.Models;
+using QRCoder;
+using System.Drawing;
+using System.IO;
 
 namespace Ataoge.SsoServer.Web.Controllers
 {
@@ -26,6 +29,53 @@ namespace Ataoge.SsoServer.Web.Controllers
         public IActionResult Privacy()
         {
             return View();
+        }
+
+        public IActionResult SendVerifyCode()
+        {
+            var aa = new {Code = 0};
+            return Json(aa);
+        }
+
+        
+        public IActionResult AuthenicatorQrCoder(string id)
+        {
+            
+            var authenicatorUri = GenerateQrCodeUri(id);
+            return QrCoder(authenicatorUri);
+        }      
+        
+        private const string AuthenicatorUriFormat = "{0}://{1}{2}/Account/DeviceLoginConfirmation?secret={3}";
+
+        private string GenerateQrCodeUri(string unformattedKey)
+        {
+
+            return string.Format(
+                AuthenicatorUriFormat,
+                Request.Scheme,
+                Request.Host, Request.PathBase,
+                unformattedKey);
+        }
+
+        public IActionResult QrCoder(string text)
+        {
+            QRCodeGenerator qrGenerator = new QRCodeGenerator();
+            if (string.IsNullOrEmpty(text))
+            {
+                text ="The text which should be encoded.";
+            }
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode(text, QRCodeGenerator.ECCLevel.Q);
+            QRCode qrCode = new QRCode(qrCodeData);
+            var rootPath = Path.GetDirectoryName(typeof(Program).Assembly.Location);
+            rootPath = AppContext.BaseDirectory;
+            rootPath = Directory.GetCurrentDirectory();
+            var path = Path.Combine(rootPath, "wwwroot");
+            var icoPath = Path.Combine(path,"favicon.ico");
+            var logoIcon = (Bitmap)Bitmap.FromFile(icoPath);
+            Bitmap qrCodeImage = qrCode.GetGraphic(20, Color.Black, Color.White, logoIcon);
+            var ms = new MemoryStream();
+            qrCodeImage.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+            return new FileContentResult(ms.ToArray(), "image/png");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

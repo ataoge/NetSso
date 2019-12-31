@@ -9,7 +9,7 @@
        "type": "coreclr",
        "request": "launch",
        "preLaunchTask": "build openidclient",
-       "program": "${workspaceFolder}/src/Ataoge.SsoServer.OpenIdClient/bin/Debug/netcoreapp3.0/Ataoge.SsoServer.OpenIdClient.dll",
+       "program": "${workspaceFolder}/src/Ataoge.SsoServer.OpenIdClient/bin/Debug/netcoreapp3.1/Ataoge.SsoServer.OpenIdClient.dll",
        "args": [],
        "cwd": "${workspaceFolder}/src/Ataoge.SsoServer.OpenIdClient",
        "stopAtEntry": false,
@@ -30,7 +30,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/src/Ataoge.SsoServer.Web/bin/Debug/netcoreapp3.0/Ataoge.SsoServer.Web.dll",
+            "program": "${workspaceFolder}/src/Ataoge.SsoServer.Web/bin/Debug/netcoreapp3.1/Ataoge.SsoServer.Web.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/Ataoge.SsoServer.Web",
             "stopAtEntry": false,

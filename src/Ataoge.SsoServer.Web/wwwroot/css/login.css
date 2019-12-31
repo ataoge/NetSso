@@ -149,6 +149,11 @@ body {
     top:0px;
 }
 
+.qrcoder {
+    width: 150px;
+    height: 150px;
+}
+
 .form-control-feedback
 {
     position: absolute;

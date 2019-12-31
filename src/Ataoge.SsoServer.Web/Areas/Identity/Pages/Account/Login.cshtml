@@ -4,6 +4,12 @@
 @{
     Layout = "_LoginLayout";
     ViewData["Title"] = "登录";
+
+    var pClass = Model.Input.DynamicVerify ? "d-none" : "";
+    var vClass = Model.Input.DynamicVerify ? "" : "d-none"; 
+
+    var wsPath =  Request.PathBase + "/ws";
+    var unformattedKey = Guid.NewGuid().ToString();
 }
 
 <div class="row">
@@ -78,10 +84,10 @@
                                     <span asp-validation-for="Input.Email" class="text-danger"></span>
                             </div>
 
-                            <div class="form-group input-group">
+                            <div id="passwordDiv" class="@pClass form-group input-group">
 
                                     <div class="input-group-prepend">
-                                        <label class="input-group-text" aspfor="password"><i
+                                        <label class="input-group-text" aspfor="Input.Password"><i
                                                 class="icon-pwd"></i></label>
                                     </div>
 
@@ -92,6 +98,17 @@
                                     <span asp-validation-for="Input.Password" class="text-danger"></span>
                             </div>
 
+                            <div id="verifyCodeDiv" class="@vClass form-group input-group">
+                                <div class="input-group-prepend">
+                                    <label class="input-group-text sr-only" for="VerifyCode">VerifyCode</label>
+                                </div>
+                                <input name="VerifyCode" class="form-control" id="VerifyCode" placeholder="输入验证码"  data-val="true" />
+                                <div class="input-group-append">
+                                     <a type="button" id="sendSMS" class="btn border" role="button">发送验证码</a>
+                                </div>
+
+                            </div>
+
                             <div class="form-group">
                                 <div class="checkbox  form-check-inline">
                                     <label asp-for="Input.RememberMe">
@@ -100,10 +117,8 @@
                                     </label>
                                 </div>
                                 <div class="checkbox form-check-inline float-right">
-                                    <label for="Input_SmsLogin">
-                                        <input type="checkbox" data-val="true"
-                                                data-val-required="The &#x8BB0;&#x4F4F;&#x6211;? field is required."
-                                                id="Input_SmsLogin" name="Input.SmsLogin" value="true" />
+                                    <label asp-for="Input.DynamicVerify">
+                                        <input asp-for="Input.DynamicVerify" />
                                         动态密码
                                     </label>
                                 </div>
@@ -113,31 +128,33 @@
                                         value="login">登录</button>
                             </div>
 
-                        </form>
+                        
  
-                        <div class="form-group">
-                                    <span>
-                                        <a id="forgot-password" asp-page="./ForgotPassword">忘记密码?</a>
-                                    </span>
+                            <div class="form-group">
+                                        <span>
+                                            <a id="forgot-password" asp-page="./ForgotPassword">忘记密码?</a>
+                                        </span>
 
-                            <span class="float-right">
-                                <button type="submit" class="btn-link border-0 bg-transparent"
-                                        fasp-page-handler="SendVerificationEmail" >重发邮箱验证信息</button>
-                            </span>
-                        </div>
+                                <span class="float-right">
+                                    <button type="submit" class="btn-link border-0 bg-transparent"
+                                            asp-page-handler="SendVerificationEmail" >重发邮箱验证信息</button>
+                                </span>
+                            </div>
+                        </form>
                     }
                     </section>
                 </div>
                 <div id="qrcode" class="tab-pane container">
                     <section>
                         <form method="post">
-                            <div class="text-danger validation-summary-valid" data-valmsg-summary="true">
-                                <ul>
-                                    <li style="display:none"></li>
-                                </ul>
-                            </div>
-                            <div class="form-group input-group"><input class="form-control" /></div>
+                          
+                            <div class="form-group input-group"><input type="hidden" class="form-control" /></div>
                         </form>
+                        <p class="text-center">用App扫描以下二维码</p>
+           
+                        <div class="text-center">
+                            <img class="qrcoder" src='@Url.Action("AuthenicatorQrCoder","Home", new {id = unformattedKey })' />
+                        </div>
                     </section>
                 </div>
             </div>
@@ -205,6 +222,140 @@
                     $('#Input_Password').prop('type','password');
                 };
             });
+
+            // 显示/隐藏
+            $("#Input_DynamicVerify").change(function(){
+                var isDynamic = $("#Input_DynamicVerify").is(':checked');
+                if (isDynamic)
+                {
+                    $("#verifyCodeDiv").removeClass("d-none");
+                    $("#passwordDiv").addClass("d-none");
+                }
+                else
+                {
+                     $("#verifyCodeDiv").addClass("d-none");
+                    $("#passwordDiv").removeClass("d-none");
+                    $("#Input_Password").val("");
+                }
+            });
+
+             $("#VerifyCode").change(function(){
+                $("#Input_Password").val($(this).val());
+            });
+
+            //发送短信
+            var util = {
+                wait: 60,
+                hsTime: function (that) {
+                    _this = this;
+                    if (_this.wait == 0) {
+                        $(that).removeAttr("disabled").text('重发短信验证码');
+                        _this.wait = 60;
+                       
+                    } else {
+                        var _this = this;
+                        $(that).attr("disabled", true).text('在' + _this.wait + '秒后点此重发');
+                        _this.wait--;
+                        setTimeout(function () {
+                            _this.hsTime(that);
+                        }, 1000)
+                    }
+                }
+            }
+            
+            $("#sendSMS").click(function(){
+               
+                var phone=$('#Email').val();
+                //var pre=/^[1][358][0-9]{9}$/;
+                if(phone=='') {
+                    //alert("手机号不能为空");
+                     BootstrapDialog.show({
+                        type : BootstrapDialog.TYPE_DANGER,
+                        title : '错误 ',
+                        message : "手机号不能为空",
+                        size : BootstrapDialog.SIZE_SMALL,//size为小，默认的对话框比较宽
+                        buttons : [ {// 设置关闭按钮
+                            label : '关闭',
+                            action : function(dialogItself) {
+                                dialogItself.close();
+                            }
+                        } ]
+                     });
+                    return this;
+                }
+              
+
+                $.ajax({
+                    url: "@Url.Action("SendVerifyCode", "Home")",//服务器发送短信
+                    type: 'GET',
+                    dataType: 'json',
+                    data: {phoneNumber: phone},
+                    success:function(result) {
+                        if (result.code > 0) {
+                            //alert(result.message);
+                            BootstrapDialog.show({
+                                type : BootstrapDialog.TYPE_DANGER,
+                                title : '错误 ',
+                                message : result.message,
+                                size : BootstrapDialog.SIZE_SMALL,//size为小，默认的对话框比较宽
+                                buttons : [ {// 设置关闭按钮
+                                    label : '关闭',
+                                    action : function(dialogItself) {
+                                        dialogItself.close();
+                                    }
+                                } ]
+                            });
+                            return this;
+                        }
+                        util.hsTime("#sendSMS");
+                    },
+                    error: function(xhr) {
+                        
+                    }
+                });
+
+                
+            });
+
+
+            //webscocket
+            var protocol = location.protocol === "https:" ? "wss:" : "ws:";
+            var wsUri = protocol + "//" + window.location.host + "@wsPath";
+            var socket = new WebSocket(wsUri);
+            socket.onopen = e => {
+                console.log("socket opened", e);
+               
+            };
+    
+            socket.onclose = function (e) {
+                console.log("socket closed", e);
+            };
+    
+            socket.onmessage = function (e) {
+                console.log(e);
+                $('#msgs').append(e.data + '<br />');
+                var msg = JSON.parse(e.data);
+                switch (msg.type)
+                {
+                    case "connected":
+                        var backMsg = {  message: "@unformattedKey", sender : msg.receiver, type : "client" };
+                        socket.send(JSON.stringify(backMsg)); 
+                        break;
+                    case "loginToken":
+                        var token = msg.message;
+                        $("#TempToken").val(token);
+                        $("#tokenLoginForm").submit();
+                        break;
+                    default:
+                        break;   
+                }
+                
+            };
+    
+            socket.onerror = function (e) {
+                console.error(e.data);
+            };
+      
 
         });
     </script>

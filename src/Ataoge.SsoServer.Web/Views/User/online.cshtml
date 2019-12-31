@@ -1,0 +1,34 @@
+@using Microsoft.AspNetCore.Authorization
+@using Ataoge.SsoServer.Web.Authorization
+@inject IAuthorizationService AuthorizationService
+@model IEnumerable<string>
+
+<table class="table table-bordered table-hover table-striped">
+    <thead>
+        <tr>
+            <th>序号</th>
+            <th>用户名</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            var i = 1;
+            foreach (var name in Model)
+            {
+                <tr>
+                    <td>@i</td>
+                    <td>@name</td>
+                    <td>
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Model, Operations.Edit)).Succeeded)
+                        {
+                            <p><a class="btn btn-default" role="button"
+                                href="@Url.Action("Edit", "Document")">Edit</a></p>
+                        }
+                    </td>
+                </tr>
+                i++;
+            }
+        }
+    </tbody>
+</table>

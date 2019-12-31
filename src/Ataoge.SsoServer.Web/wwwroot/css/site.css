@@ -69,3 +69,67 @@ body {
   white-space: nowrap;
   line-height: 60px; /* Vertically center the text there */
 }
+
+
+.f-box {
+  background: #f4f4f4;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  min-height: 210px;
+  margin-bottom: 20px;
+  transition-duration: 500ms;
+  transition-property: width, background;
+  transition-timing-function: ease;
+  -webkit-transition-duration: 500ms;
+  -webkit-transition-property: width, background;
+  -webkit-transition-timing-function: ease;
+}
+
+.f-box i{
+  font-size: 50px;
+  line-height: normal;
+  margin-top: 40px;
+  display: block;
+  color: #337ab7;
+}
+
+.f-box:hover, .f-box.active {
+  background: #428bca;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  min-height: 210px;
+  margin-bottom: 20px;
+  transition-duration: 500ms;
+  transition-property: width, background;
+  transition-timing-function: ease;
+  -webkit-transition-duration: 500ms;
+  -webkit-transition-property: width, background;
+  -webkit-transition-timing-function: ease;
+}
+
+.f-box:hover i, .f-box.active i{
+  font-size: 50px;
+  line-height: normal;
+  margin-top: 40px;
+  display: block;
+  color: #fff;
+
+}
+
+.f-box:hover h2, .f-box.active h2{
+  color: #fff;
+}
+
+.f-box h2{
+  font-size: 20px;
+  text-transform: uppercase;
+  font-weight: 400;
+  font-family: 'Fjalla One', sans-serif;
+}
+
+.f-text {
+  font-size: 14px;
+  font-weight: 300;
+}

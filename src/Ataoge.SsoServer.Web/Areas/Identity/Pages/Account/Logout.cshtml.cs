@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Ataoge.SsoServer.Web.Data;
+using Ataoge.SsoServer.Web.Services;
 using IdentityModel;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;
@@ -28,6 +29,8 @@ namespace Ataoge.SsoServer.Web.Areas.Identity.Pages.Account
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<LogoutModel> _logger;
 
+        private readonly IOnlineUserService _onlineUserService;
+
         [BindProperty]
         public LogoutViewModel Input {get; set;}
 
@@ -36,12 +39,15 @@ namespace Ataoge.SsoServer.Web.Areas.Identity.Pages.Account
 
         public LogoutModel(IIdentityServerInteractionService interaction,
                 IEventService events,
-                SignInManager<ApplicationUser> signInManager, ILogger<LogoutModel> logger)
+                SignInManager<ApplicationUser> signInManager, 
+                IOnlineUserService onlineUserService,
+                ILogger<LogoutModel> logger)
         {
             _interaction = interaction;
             _events = events;
 
             _signInManager = signInManager;
+            _onlineUserService = onlineUserService;
             _logger = logger;
         }
 
@@ -70,6 +76,9 @@ namespace Ataoge.SsoServer.Web.Areas.Identity.Pages.Account
                 //注销用户
                 var userAgent = Request.Headers["User-Agent"];
                 var userName = User.Identity.Name;
+                if (!string.IsNullOrEmpty(userName))
+                    _onlineUserService.Remove(userName.ToLower(), userAgent);
+
 
                  _logger.LogInformation("User logged out.");
 

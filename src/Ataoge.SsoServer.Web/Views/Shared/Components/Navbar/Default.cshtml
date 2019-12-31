@@ -1,0 +1,13 @@
+@model IEnumerable<MenuItem>
+
+<ul class="navbar-nav flex-grow-1">
+    @foreach (var item in Model)
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="@item.Url">@item.Name</a>
+        </li>
+    }
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">隐私</a>
+    </li>
+</ul>

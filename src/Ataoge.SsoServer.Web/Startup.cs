@@ -13,6 +13,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Http;
+using System.Net;
+using Ataoge.SsoServer.WebSockets;
+using Ataoge.SsoServer.Web.Services;
+using Ataoge.SsoServer.Web.Authorization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Ataoge.SsoServer.Web
 {
@@ -57,10 +62,9 @@ namespace Ataoge.SsoServer.Web
             });
             services.AddIdentity<ApplicationUser, ApplicationRole>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddAtaogeEfStores<ApplicationDbContext>()
-                .AddUserManager<AspNetUserManager<ApplicationUser>>()
+                .AddUserManager<LdapUserManager<ApplicationUser, int>>()
                 .AddDefaultTokenProviders()
                 .AddDefaultUI();
-
             services.AddTransient<IUserClaimsPrincipalFactory<ApplicationUser>, AtaogeClaimsPrincipalFactory<ApplicationUser, ApplicationRole>>();
 
             services.AddIdentityServer(options => {
@@ -80,6 +84,15 @@ namespace Ataoge.SsoServer.Web
             
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+            // 权限相关
+            services.AddSingleton<IAuthorizationHandler, OnlineUserManageHandler>();
+
+            // 在线用户缓存、更新相关
+            services.AddSingleton<IOnlineUserService, MemoryOnlineUserService>();
+            services.AddTransient<Microsoft.Extensions.Hosting.IHostedService, OnlineUserUpdateService>();
+
+            services.AddWebSocketManager();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -99,7 +112,24 @@ namespace Ataoge.SsoServer.Web
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            // 代理服务器
+            var forwardedHeadersOptions = new ForwardedHeadersOptions()
+            {
+                ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.All
+            };
+            forwardedHeadersOptions.KnownNetworks.Clear();
+            forwardedHeadersOptions.KnownProxies.Clear();
+            forwardedHeadersOptions.KnownProxies.Add(IPAddress.Parse("172.17.0.1"));
+            forwardedHeadersOptions.KnownProxies.Add(IPAddress.Parse("192.168.200.55"));
+            app.UseForwardedHeaders(forwardedHeadersOptions);
+            app.UseBasicForwardedHeaders(new BasicForwardedHeadersOptions(){
+                ForwardedHeaders = AspNetCore.BasicOverrides.BasicForwardedHeaders.XForwardedPathBase | AspNetCore.BasicOverrides.BasicForwardedHeaders.IntranetPenetration
+            });
+
             app.UseRouting();
+
+            app.UseWebSockets();
+            app.MapWebSocketManager("/ws", app.ApplicationServices.GetRequiredService<LoginMessageHandler>());
 
             app.UseIdentityServer(); //IdentityServer4
             app.UseAuthentication();

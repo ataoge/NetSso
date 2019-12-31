@@ -15,6 +15,7 @@ using Ataoge.SsoServer.Web.Data;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using IdentityServer4.Models;
+using Ataoge.SsoServer.Web.Services;
 
 namespace Ataoge.SsoServer.Web.Areas.Identity.Pages.Account
 {
@@ -38,6 +39,7 @@ namespace Ataoge.SsoServer.Web.Areas.Identity.Pages.Account
             SignInManager<ApplicationUser> signInManager, 
             ILogger<LoginModel> logger,
             UserManager<ApplicationUser> userManager,
+            IOnlineUserService onlineUserService,
             IEmailSender emailSender)
         {
             _interaction = interaction;
@@ -47,9 +49,13 @@ namespace Ataoge.SsoServer.Web.Areas.Identity.Pages.Account
 
             _userManager = userManager;
             _signInManager = signInManager;
+            _onlineUserService = onlineUserService;
             _emailSender = emailSender;
             _logger = logger;
         }
+
+        private readonly IOnlineUserService _onlineUserService;
+
 
         [BindProperty]
         public LoginViewModel Input { get; set; }
@@ -128,6 +134,13 @@ namespace Ataoge.SsoServer.Web.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
+
+                    //添加在线用户 
+                    string client = this.Request.Headers["User-Agent"];
+                    if (!string.IsNullOrEmpty(Input.Email))
+                        _onlineUserService.Add(Input.Email.ToLower(), client);
+
+
                     if (context != null)
                     {
                         if (await _clientStore.IsPkceClientAsync(context.ClientId))
@@ -153,11 +166,13 @@ namespace Ataoge.SsoServer.Web.Areas.Identity.Pages.Account
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                    return Page();
+                    ModelState.AddModelError(string.Empty, "尝试登录失败。");// "Invalid login attempt."
+                    //Input.ExternalProviders = await GetExternalProviders();
+                    //return Page();
                 }
             }
 
+            Input.ExternalProviders = await GetExternalProviders();
             // If we got this far, something failed, redisplay form
             return Page();
         }
@@ -217,17 +232,7 @@ namespace Ataoge.SsoServer.Web.Areas.Identity.Pages.Account
                 return vm;
             }
 
-            var schemes = await _schemeProvider.GetAllSchemesAsync();
-
-            var providers = schemes
-                .Where(x => x.DisplayName != null ||
-                            (x.Name.Equals(AccountOptions.WindowsAuthenticationSchemeName, StringComparison.OrdinalIgnoreCase))
-                )
-                .Select(x => new ExternalProvider
-                {
-                    DisplayName = x.DisplayName,
-                    AuthenticationScheme = x.Name
-                }).ToList();
+            var providers = await GetExternalProviders();
 
             var allowLocal = true;
             if (context?.ClientId != null)
@@ -252,6 +257,26 @@ namespace Ataoge.SsoServer.Web.Areas.Identity.Pages.Account
                 Email = context?.LoginHint,
                 ExternalProviders = providers.ToArray()
             };
+        }
+
+        
+
+        public async Task<IList<ExternalProvider>> GetExternalProviders()
+        {
+            var schemes = await _schemeProvider.GetAllSchemesAsync();
+
+            var providers = schemes
+                .Where(x => x.DisplayName != null ||
+                            (x.Name.Equals(AccountOptions.WindowsAuthenticationSchemeName, StringComparison.OrdinalIgnoreCase))
+                )
+                .Select(x => new ExternalProvider
+                {
+                    DisplayName = x.DisplayName,
+                    AuthenticationScheme = x.Name
+                }).ToList();
+
+            
+            return providers;
         }
 
         private async Task<LoginViewModel> BuildLoginViewModelAsync(LoginInputModel model)

@@ -2,6 +2,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Ataoge.SsoServer.Web.Data;
 using IdentityModel;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
@@ -14,10 +15,13 @@ namespace Ataoge.SsoServer.Web
         public AtaogeClaimsPrincipalFactory(
             UserManager<TUser> userManager,
             RoleManager<TRole> roleManager, 
+            IHttpContextAccessor httpContextAccessor, 
             IOptions<IdentityOptions> optionsAccessor) : base(userManager, roleManager, optionsAccessor)
         {
-    
+            this._httpContextAccessor = httpContextAccessor;
         }
+
+        private readonly IHttpContextAccessor _httpContextAccessor;
     
         protected override async Task<ClaimsIdentity> GenerateClaimsAsync(TUser user)
         {
@@ -50,6 +54,13 @@ namespace Ataoge.SsoServer.Web
            
             //id.AddClaim(new Claim(MyClaimTypes.IsAdmin, user.IsAdministrator.ToString().ToLower()));
             return id;
+        }
+
+        string GetBasePath()
+        {
+            var request = _httpContextAccessor.HttpContext.Request;
+            
+            return request.Scheme + "://" + request.Host + request.PathBase;
         }
 
         
