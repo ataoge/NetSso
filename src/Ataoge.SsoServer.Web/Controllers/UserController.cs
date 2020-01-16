@@ -23,5 +23,13 @@ namespace Ataoge.SsoServer.Web.Controllers
             var users = _onlineUserService.GetAll();
             return View(users);
         }
+
+        [HttpGet("/[controller]/[action]/{format?}")]
+        public IActionResult Test(string format)
+        {
+            if (format == "html")
+                return View();
+            return Content(format);
+        }
     }
 }

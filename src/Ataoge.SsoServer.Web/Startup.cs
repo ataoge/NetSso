@@ -19,6 +19,7 @@ using Ataoge.SsoServer.Web.Services;
 using Ataoge.SsoServer.Web.Authorization;
 using Microsoft.AspNetCore.Authorization;
 
+
 namespace Ataoge.SsoServer.Web
 {
     public class Startup
@@ -37,7 +38,7 @@ namespace Ataoge.SsoServer.Web
 
         public void ConfigureDevelopmentServices(IServiceCollection services)
         {
-            StartupConfigureServices(services);
+            StartupConfigureServices(services, false);
         }
 
         public void ConfigureProductionServices(IServiceCollection services)
@@ -53,13 +54,24 @@ namespace Ataoge.SsoServer.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void StartupConfigureServices(IServiceCollection services, bool useLocal = true)
         {
-            
-            services.AddDbContext<ApplicationDbContext>(options => {
-                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
-                options.UseIdentityServer(opts => {
-                    opts.UseInnerModel = true;
+            if (useLocal)
+            {
+                services.AddDbContext<ApplicationDbContext>(options => {
+                    options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+                    options.UseIdentityServer(opts => {
+                        opts.UseInnerModel = true;
+                    });
                 });
-            });
+            }
+            else
+            {
+                services.AddDbContext<ApplicationDbContext>(options => {
+                    options.UseNpgsql(Configuration.GetConnectionString("NpgsqlConnection"));
+                    options.UseIdentityServer(opts => {
+                        opts.UseInnerModel = true;
+                    });
+                 });
+            }
             services.AddIdentity<ApplicationUser, ApplicationRole>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddAtaogeEfStores<ApplicationDbContext>()
                 .AddUserManager<LdapUserManager<ApplicationUser, int>>()
@@ -120,11 +132,13 @@ namespace Ataoge.SsoServer.Web
             forwardedHeadersOptions.KnownNetworks.Clear();
             forwardedHeadersOptions.KnownProxies.Clear();
             forwardedHeadersOptions.KnownProxies.Add(IPAddress.Parse("172.17.0.1"));
+            forwardedHeadersOptions.KnownProxies.Add(IPAddress.Parse("172.26.90.90"));
             forwardedHeadersOptions.KnownProxies.Add(IPAddress.Parse("192.168.200.55"));
             app.UseForwardedHeaders(forwardedHeadersOptions);
-            app.UseBasicForwardedHeaders(new BasicForwardedHeadersOptions(){
-                ForwardedHeaders = AspNetCore.BasicOverrides.BasicForwardedHeaders.XForwardedPathBase | AspNetCore.BasicOverrides.BasicForwardedHeaders.IntranetPenetration
-            });
+            var basicForwardedHeadersOptions = new BasicForwardedHeadersOptions() {
+                ForwardedHeaders = AspNetCore.BasicOverrides.BasicForwardedHeaders.IntranetPenetration | AspNetCore.BasicOverrides.BasicForwardedHeaders.XForwardedPathBase
+            };
+            app.UseBasicForwardedHeaders(basicForwardedHeadersOptions);
 
             app.UseRouting();
 

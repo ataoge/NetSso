@@ -16,6 +16,7 @@ using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using IdentityServer4.Models;
 using Ataoge.SsoServer.Web.Services;
+using Ataoge.SsoServer.WebSockets;
 
 namespace Ataoge.SsoServer.Web.Areas.Identity.Pages.Account
 {
@@ -28,6 +29,9 @@ namespace Ataoge.SsoServer.Web.Areas.Identity.Pages.Account
         private readonly IEventService _events;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+
+        private readonly LoginManager _loginManager;
+
         private readonly ILogger<LoginModel> _logger;
         private readonly IEmailSender _emailSender;
 
@@ -40,6 +44,7 @@ namespace Ataoge.SsoServer.Web.Areas.Identity.Pages.Account
             ILogger<LoginModel> logger,
             UserManager<ApplicationUser> userManager,
             IOnlineUserService onlineUserService,
+            LoginManager loginManager,
             IEmailSender emailSender)
         {
             _interaction = interaction;
@@ -50,6 +55,7 @@ namespace Ataoge.SsoServer.Web.Areas.Identity.Pages.Account
             _userManager = userManager;
             _signInManager = signInManager;
             _onlineUserService = onlineUserService;
+            _loginManager = loginManager;
             _emailSender = emailSender;
             _logger = logger;
         }
@@ -174,6 +180,28 @@ namespace Ataoge.SsoServer.Web.Areas.Identity.Pages.Account
 
             Input.ExternalProviders = await GetExternalProviders();
             // If we got this far, something failed, redisplay form
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostTokenLoginAsync(TokenInputModel model, string returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            if (ModelState.IsValid)
+            {
+                if (!string.IsNullOrEmpty(model.TempToken))  //扫码登录
+                {
+                    var userName = _loginManager.GetUserName(model.TempToken);
+                    var user = await _userManager.FindByIdAsync(userName);
+                    if (user != null)
+                    {
+                        await _signInManager.SignInAsync(user, false);
+                        _logger.LogInformation("User logged in.");
+                        return LocalRedirect(returnUrl);
+                    }
+                }
+            }
+
+            Input.ExternalProviders = await GetExternalProviders();
             return Page();
         }
 

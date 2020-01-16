@@ -45,7 +45,7 @@ namespace Ataoge.SsoServer.Web.Controllers
             return QrCoder(authenicatorUri);
         }      
         
-        private const string AuthenicatorUriFormat = "{0}://{1}{2}/Account/DeviceLoginConfirmation?secret={3}";
+        private const string AuthenicatorUriFormat = "{0}://{1}{2}/Identity/Account/ConfirmDeviceLogin?secret={3}";
 
         private string GenerateQrCodeUri(string unformattedKey)
         {

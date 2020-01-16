@@ -4,3 +4,33 @@
     ViewData["Title"] = "Confirm DeviceLogin";
 }
 
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
+<body>
+    <div class="container body-content">
+         <h1>@Model.Input.ClientName 请求登录PC</h1>
+         <form method="post" >
+            <input type="hidden" asp-for="Input.ClientId"  />
+            <input type="hidden" asp-for="Input.AccessToken"  />
+            <input type="hidden" asp-for="Input.OpenId"  />
+            <input type="hidden" asp-for="Input.ConnectedId"  />
+            <div class="form-group">
+                <button class="btn btn-primary btn-default btn-block btn-flat" name="action" value="OK">确定</button>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-primary btn-default btn-block btn-flat" name="action" value="Cancle">取消</button>
+            </div>
+        </form>
+
+        <hr />
+        <footer>
+            <p>&copy; 2020 - 广州城市信息研究所有限公司</p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -15,20 +15,20 @@ namespace Ataoge.SsoServer.Web.ViewComponents
             this._authorizationService = authorizationService;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync()
+        public IViewComponentResult Invoke()
         {
             var menus = new List<MenuItem>();
-            menus.Add(new MenuItem() {Name = "首页", Url = "Index"});
+            //menus.Add(new MenuItem() {Name = "首页", Url = "Index"});
             //menus.Add(new MenuItem() {Name = "隐私", Url = "Privacy"});
 
             if (User.Identity.IsAuthenticated)
             {
-                menus.Add(new MenuItem() {Name = "关于", Url = "Index"});
+                menus.Add(new MenuItem() {Name = "关于", Url =  Url.Action("Index", "Home")});
             }
 
             if (User.IsInRole("admin"))
             {
-                menus.Add(new MenuItem() {Name = "管理", Url = "Index"});
+                menus.Add(new MenuItem() {Name = "在线用户", Url = Url.Action("Online", "User")});
             }
             
             

@@ -223,7 +223,7 @@
                 };
             });
 
-            // 显示/隐藏
+            // 显示/隐藏动态登录
             $("#Input_DynamicVerify").change(function(){
                 var isDynamic = $("#Input_DynamicVerify").is(':checked');
                 if (isDynamic)
@@ -265,7 +265,7 @@
             
             $("#sendSMS").click(function(){
                
-                var phone=$('#Email').val();
+                var phone=$('#Input_Email').val();
                 //var pre=/^[1][358][0-9]{9}$/;
                 if(phone=='') {
                     //alert("手机号不能为空");

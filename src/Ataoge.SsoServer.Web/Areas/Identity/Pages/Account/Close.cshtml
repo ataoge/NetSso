@@ -1,0 +1,42 @@
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+     <script type="text/javascript">
+            function closeWindow() {
+                
+                if (window.MobileNativeLib) {
+     
+                    var ret = window.MobileNativeLib.callMethod("/ui/close-myself", "{'hidden':true}");
+                }
+                else {
+                    var win = window.open("", "_self");
+                    win.close();
+                }
+            }
+        </script>
+</head>
+<body onload="closeWindow();">
+    <a href="dcimbs:///ui/close-myself">关闭</a>
+
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            
+                if (window.MobileNativeLib) {
+           
+                    var ret = window.MobileNativeLib.callMethod("/ui/close-myself", "{'hidden':true}");
+                }
+                else {
+                    var win = window.open("", "_self");
+                    win.close();
+                }
+        });
+    </script>
+</body>
+</html>
